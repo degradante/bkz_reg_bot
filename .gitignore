@@ -1,1 +1,4 @@
 __pycache__
+*.xls
+*.xlsx
+bot_token.py

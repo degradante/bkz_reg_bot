@@ -4,8 +4,8 @@ import pandas
 
 
 class Team:
-    def __init__(self, id, name):
-        self.id = id
+    def __init__(self, team_id, name):
+        self.id = team_id
         self.name = name
 
 
@@ -26,10 +26,16 @@ def get_teams():
     return teams_new
 
 
+def get_team_index(name):
+    for i, team in enumerate(teams):
+        if team.name == name:
+            return i
+
+
 class Participant:
-    def __init__(self, tg_id, id, last_name, first_name, mid_name, birthdate, team_id):
+    def __init__(self, tg_id, participant_id, last_name, first_name, mid_name, birthdate, team_id):
         self.tg_id = tg_id
-        self.id = id
+        self.id = participant_id
         self.last_name = last_name
         self.first_name = first_name
         self.mid_name = mid_name
@@ -55,7 +61,7 @@ def get_participants():
     return new_participants
 
 
-def get_participant_index(tg_id, participants):
+def get_participant_index(tg_id):
     for i, participant in enumerate(participants):
         if participant.tg_id == tg_id:
             return i
@@ -64,10 +70,10 @@ def get_participant_index(tg_id, participants):
 
 
 class Games:
-    def __init__(self, day, tour, teams_indexes, legionnaires):
+    def __init__(self, day, tour, registered_teams, legionnaires):
         self.day = day
         self.tour = tour
-        self.teams_indexes = teams_indexes
+        self.registered_teams = registered_teams
         self.legionnaires = legionnaires
 
 
@@ -93,13 +99,7 @@ def get_game_index(day, games):
             return i
 
 
-def get_team_index(name, teams):
-    for i, team in enumerate(teams):
-        if team.name == name:
-            return i
-
-
-def create_table(game_index, games, teams, participants):
+def create_table(game_index, games):
     filepath = f"{games[game_index].day}.xlsx"
     wb = openpyxl.Workbook()
     wb.save(filepath)
@@ -123,7 +123,7 @@ def create_table(game_index, games, teams, participants):
             table['id команды'].append(teams[team_index].id)
             table['Название'].append(teams[team_index].name)
             table['Город'].append('Москва')
-            table['Флаг'].append(get_participant_flag(i, team_index, player_index, teams, participants))  # ?
+            table['Флаг'].append(get_participant_flag(i, team_index, player_index))
             table['id игрока'].append(participants[player_index].id)
             table['Фамилия'].append(participants[player_index].last_name)
             table['Имя'].append(participants[player_index].first_name)
@@ -136,7 +136,7 @@ def create_table(game_index, games, teams, participants):
     return filepath
 
 
-def get_participant_flag(cycle_i, team_index, player_index, teams, participants):
+def get_participant_flag(cycle_i, team_index, player_index):
     if cycle_i == 0:
         return 'К'
 
@@ -144,3 +144,13 @@ def get_participant_flag(cycle_i, team_index, player_index, teams, participants)
         return 'Б'
 
     return 'Л'
+
+
+class RegisteredTeam:
+    def __init__(self, team_index, players):
+        self.team_index = team_index
+        self.players = players
+
+
+teams = get_teams()
+participants = get_participants()
